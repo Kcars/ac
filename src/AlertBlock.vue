@@ -215,14 +215,33 @@
     >
       <p class="text-2xl">{{ _label }}</p>
       <p class="text-2xl">{{ "類型: " + getLabelFromAT(_at) }}</p>
-      <p class="text-2xl">
-        {{ "設定值: " + _dvalue + (_at == "countdown" ? "s" : "") }}
+
+
+      <p class="text-2xl" v-if="_at === 'countdown'">
+        {{ "設定值: " + (this._select_hour &lt; 0 ? 0 : this._select_hour) + ":" + (this._select_minute &lt; 0 ? 0 : this._select_minute) + ":" + (this._select_second &lt; 0 ? 0 : this._select_second) }}
       </p>
+
+      <p class="text-2xl" v-if="_at === 'everyday'">
+        {{ "設定值: " + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+      </p>
+
+      <p class="text-2xl" v-if="_at === 'everyweek'">
+        {{ "設定值: 星期" + this._select_day + " ->" + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+      </p>
+
+      <p class="text-2xl" v-if="_at === 'spectime'">
+        {{ "設定值: " + this._select_month + "/" + this._select_date + " ->" + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+      </p>
+
       <p class="text-2xl">{{ "音量: " + _vol }}</p>
+
+      <!-- -->
+
       <p class="text-2xl">
         {{ "是否重複: " + (_loop == "true" ? "是" : "否") }}
       </p>
-      <p class="text-2xl">{{ "剩餘: " + _value + "s" }}</p>
+
+      <p class="text-2xl" v-if="_at === 'countdown'">{{ "剩餘: " + _value + "s" }}</p>
 
       <button
         class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
