@@ -64,12 +64,17 @@
         :select_second="task.select_second"
         :is_setting="task.is_setting"
         v-on:remove="onCompRemove"
+        v-on:update_tasks="updateTasks"
       ></AlertBlockVue>
     </div>
   </div>
 </template>
 
 <script>
+const TABLE_NAME = "tasks_ac";
+
+import localforage from "localforage";
+
 import AlertBlockVue from "./AlertBlock.vue";
 
 export default {
@@ -96,27 +101,24 @@ export default {
     onCompRemove(index) {
       this.tasks.splice(index, 1);
     },
+    updateTasks(item) {
+      this.tasks[item.index] = item;
+      let obj = JSON.stringify(this.tasks);
+      localforage.setItem(TABLE_NAME, obj, (err, res) => {});
+    },
   },
   data() {
     return {
       title: "hello",
       times: { hour: 0, minute: 0, second: 0 },
-      tasks: [
-        {
-          at: "countdown",
-          label: "count down test",
-          vol: 0.5,
-          loop: "true",
-          source: "",
-          select_month: -1,
-          select_date: -1,
-          select_day: -1,
-          select_hour: -1,
-          select_minute: -1,
-          select_second: 15,
-        },
-      ],
+      tasks: [],
     };
+  },
+  async mounted() {
+    let tasks = await localforage.getItem(TABLE_NAME);
+    tasks = JSON.parse(tasks);
+    tasks = tasks == null ? [] : tasks;
+    this.tasks = tasks;
   },
 };
 </script>

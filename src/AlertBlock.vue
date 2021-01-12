@@ -216,21 +216,47 @@
       <p class="text-2xl">{{ _label }}</p>
       <p class="text-2xl">{{ "類型: " + getLabelFromAT(_at) }}</p>
 
-
       <p class="text-2xl" v-if="_at === 'countdown'">
         {{ "設定值: " + (this._select_hour &lt; 0 ? 0 : this._select_hour) + ":" + (this._select_minute &lt; 0 ? 0 : this._select_minute) + ":" + (this._select_second &lt; 0 ? 0 : this._select_second) }}
       </p>
 
       <p class="text-2xl" v-if="_at === 'everyday'">
-        {{ "設定值: " + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+        {{
+          "設定值: " +
+          this._select_hour +
+          ":" +
+          this._select_minute +
+          ":" +
+          this._select_second
+        }}
       </p>
 
       <p class="text-2xl" v-if="_at === 'everyweek'">
-        {{ "設定值: 星期" + this._select_day + " ->" + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+        {{
+          "設定值: 星期" +
+          this._select_day +
+          " ->" +
+          this._select_hour +
+          ":" +
+          this._select_minute +
+          ":" +
+          this._select_second
+        }}
       </p>
 
       <p class="text-2xl" v-if="_at === 'spectime'">
-        {{ "設定值: " + this._select_month + "/" + this._select_date + " ->" + this._select_hour + ":" + this._select_minute + ":" + this._select_second }}
+        {{
+          "設定值: " +
+          this._select_month +
+          "/" +
+          this._select_date +
+          " ->" +
+          this._select_hour +
+          ":" +
+          this._select_minute +
+          ":" +
+          this._select_second
+        }}
       </p>
 
       <p class="text-2xl">{{ "音量: " + _vol }}</p>
@@ -241,7 +267,9 @@
         {{ "是否重複: " + (_loop == "true" ? "是" : "否") }}
       </p>
 
-      <p class="text-2xl" v-if="_at === 'countdown'">{{ "剩餘: " + _value + "s" }}</p>
+      <p class="text-2xl" v-if="_at === 'countdown'">
+        {{ "剩餘: " + _value + "s" }}
+      </p>
 
       <button
         class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
@@ -412,6 +440,24 @@ export default {
     doSetting() {
       this.setting = !this.setting;
       this.parseValue();
+
+      if (!this.setting) {
+
+        this.$emit("update_tasks", {
+          index: this.index,
+          at: this._at,
+          label: this._label,
+          vol: this._vol,
+          loop: this._loop,
+          source: this._source,
+          select_month: this._select_month,
+          select_date: this._select_date,
+          select_day: this._select_day,
+          select_hour: this._select_hour,
+          select_minute : this._select_minute, 
+          select_second : this._select_second
+        }); 
+      }
     },
     doRemove() {
       this.$emit("remove", this.index);
@@ -429,14 +475,11 @@ export default {
       }
     },
     onChangeAT(ev) {
-      //alert(ev.target.value);
       let val = ev.target.value;
 
-      //this.enable_month = this.enable_date = this.enable_day = this.enable_hour = this.enable_minute = this.enable_second = false;
       this.enable_month = this.enable_day = false;
 
       if (val == "countdown") {
-        //this.enable_hour = this.enable_minute = this.enable_second = true;
       }
 
       if (val == "spectime") {
@@ -449,7 +492,6 @@ export default {
       }
 
       if (val == "everyday") {
-        // this.enable_hour = this.enable_minute = this.enable_second = true;
       }
     },
     onChangeMonth(ev) {},
