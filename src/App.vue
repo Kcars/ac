@@ -109,7 +109,6 @@ export default {
   },
   data() {
     return {
-      title: "hello",
       times: { hour: 0, minute: 0, second: 0 },
       tasks: [],
     };
