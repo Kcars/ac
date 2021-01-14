@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-700 rounded-lg w-3/12 h-5/12 flex flex-col relative">
+  <div class="bg-gray-700 rounded-lg w-80 h-80 flex flex-wrap flex-col relative m-3">  
     <div class="absolute -top-3 -right-3">
       <button
         class="text-indigo-100 transition-colors duration-150 bg-red-500 rounded-lg focus:shadow-outline hover:bg-indigo-800"
@@ -22,8 +22,8 @@
         </svg>
       </button>
     </div>
-
-    <div class="absolute -top-3 right-2/4">
+ 
+    <div class="w-full absolute -top-3 mx-auto flex justify-center">
       <button
         class="text-indigo-100 transition-colors duration-150 bg-blue-900 rounded-lg focus:shadow-outline hover:bg-indigo-800"
         @click="doSetting"
@@ -295,7 +295,7 @@
       </p>
 
       <button
-        v-if="_at == 'coundown'"
+        v-if="_at == 'countdown'"
         class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
         @click="reset"
       >

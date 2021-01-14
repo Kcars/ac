@@ -39,7 +39,7 @@
     <!-- main -->
 
     <div
-      class="mx-auto w-11/12 h-3/6 flex flex-row flex-warp justify-center space-x-5"
+      class="mx-auto w-11/12 h-full flex flex-wrap flex-1 justify-center"
     >
       <AlertBlockVue
         v-for="(task, index) in tasks"
