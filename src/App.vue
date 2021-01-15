@@ -39,7 +39,7 @@
     <!-- main -->
 
     <div
-      class="mx-auto w-11/12 h-full flex flex-wrap flex-1 justify-center"
+      class="mx-auto w-11/12 h-5/6 flex flex-wrap flex-col flex-1 "
     >
       <AlertBlockVue
         v-for="(task, index) in tasks"
@@ -63,6 +63,7 @@
         :select_minute="task.select_minute"
         :select_second="task.select_second"
         :is_setting="task.is_setting"
+        :crontext="task.crontext"
         v-on:remove="onCompRemove"
         v-on:update_tasks="updateTasks"
       ></AlertBlockVue>
@@ -95,6 +96,7 @@ export default {
         select_hour: -1,
         select_minute: -1,
         select_second: -1,
+        crontext: "",
         is_setting: true,
       });
     },
