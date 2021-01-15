@@ -149,12 +149,12 @@
           </div>
         </div>
         <div class="ml-5 mt-2 w-1/2" v-if="_at == 'cron'">
-          <label for="vol">crontext: </label>
+          <label for="cron">crontext: </label>
           <input
             class="w-1/2"
             type="text"
-            id="label"
-            name="source"
+            id="cron"
+            name="cron"
             placeholder="* * * * * *"
             v-model="_crontext"
           />
