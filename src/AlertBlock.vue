@@ -467,13 +467,14 @@ export default {
       }
 
       if (this._at == "cron") {
+        console.log(`cron type: ${this._crontext}`);
         if (this._crontext.split(" ").length == 6) {
-
           if (task != null) {
             task.destroy();
           }
 
-          task = cron.schedule(this.crontext, () => {
+          task = cron.schedule(this._crontext, () => {
+            console.log(`play form cron task.`)
             this.play();
           });
         }
