@@ -4,7 +4,7 @@
     <div class="w-11/12 h-32 mx-auto flex flex-row flex-wrap">
       <div class="w-2/6 m-auto text-center flex justify-end">
         <button
-          class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
+          class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800 absolute left-0 top-0"
           @click="addAlert"
         >
           <svg
@@ -24,7 +24,7 @@
         </button>
       </div>
 
-      <div class="w-2/6 text-center text-8xl">
+      <div class="w-2/6 text-center text-5xl digi">
         {{
           (times.hour &lt; 10 ? "0" + times.hour.toString() : times.hour) +
           ":" +
@@ -39,7 +39,7 @@
     <!-- main -->
 
     <div
-      class="mx-auto w-11/12 h-5/6 flex flex-wrap flex-col flex-1 "
+      class="mx-auto w-11/12 h-5/6 flex flex-nowrap flex-col"
     >
       <AlertBlockVue
         v-for="(task, index) in tasks"

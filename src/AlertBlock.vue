@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="w-full mx-auto">
     <div
       v-if="setting"
-      class="bg-gray-700 rounded-lg w-1/2 h-60 flex m-1 relative overflow-auto"
+      class="bg-gray-700 rounded-lg w-1/2 h-60 flex m-1 relative overflow-auto mx-auto"
     >
       <div class="mx-2 my-auto flex">
         <button
@@ -217,7 +217,7 @@
     </div>
     <div
       v-if="!setting"
-      class="bg-gray-700 rounded-lg w-1/2 h-16 flex m-1 relative overflow-auto"
+      class="bg-gray-700 rounded-lg w-1/2 h-16 flex m-1 relative overflow-auto mx-auto"
     >
       <div class="mx-2 my-auto flex">
         <button

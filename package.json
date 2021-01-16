@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack serve --mode=development --config webpack.config.js",
+    "watch": "webpack serve --https --mode=development --config webpack.config.js",
     "out": "webpack --mode=production --config webpack.config.js"
   },
   "author": "",
@@ -30,6 +30,7 @@
     "@vue/cli": "^4.5.10",
     "localforage": "^1.9.0",
     "node-cron": "^2.0.3",
+    "ttf-loader": "^1.0.2",
     "vue": "^3.0.5"
   }
 }

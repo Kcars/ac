@@ -24,6 +24,14 @@ module.exports = {
             {
                 test: /\.mp3$/,
                 loader: 'file-loader'
+            },
+            {
+                test: /\.ttf$/,
+                use: [
+                    {
+                        loader: 'ttf-loader',
+                    }
+                ]
             }
         ],
     },

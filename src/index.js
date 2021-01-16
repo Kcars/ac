@@ -15,7 +15,7 @@ setInterval(() => {
     let second = dd.getSeconds();
     let zone = new Date().toString().match(/([-\+][0-9]+)\s/)[1];
 
-    let obj_times = { month,date,day,hour,minute,second,zone };
+    let obj_times = { month, date, day, hour, minute, second, zone };
 
     vm.times = obj_times;
 }, 1000);
