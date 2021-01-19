@@ -431,9 +431,10 @@ export default {
     },
     doSetting() {
       this.setting = !this.setting;
-      this.parseValue();
 
       if (!this.setting) {
+        //this.parseValue();
+
         this.$emit("update_tasks", {
           index: this.index,
           at: this._at,
@@ -470,13 +471,17 @@ export default {
         console.log(`cron type: ${this._crontext}`);
         if (this._crontext.split(" ").length == 6) {
           if (task != null) {
+            console.log(`cron destroy: ${this._crontext}`);
             task.destroy();
           }
 
           task = cron.schedule(this._crontext, () => {
-            console.log(`play form cron task.`)
+            console.log(`cron play: ${this._crontext} , sound: ${this._source}`);
             this.play();
           });
+
+          console.log(`cron create:`);
+          console.log(task)
         }
       }
     },
