@@ -37,10 +37,7 @@
     </div>
 
     <!-- main -->
-
-    <div
-      class="mx-auto w-11/12 h-5/6 flex flex-nowrap flex-col"
-    >
+    <div class="mx-auto w-11/12 h-5/6 flex flex-nowrap flex-col">
       <AlertBlockVue
         v-for="(task, index) in tasks"
         :key="task"
@@ -102,12 +99,16 @@ export default {
     },
     onCompRemove(index) {
       this.tasks.splice(index, 1);
+      this.updateTable();
     },
     updateTasks(item) {
       this.tasks[item.index] = item;
+      this.updateTable();
+    },
+    updateTable() {
       let obj = JSON.stringify(this.tasks);
       localforage.setItem(TABLE_NAME, obj, (err, res) => {});
-    },
+    }
   },
   data() {
     return {

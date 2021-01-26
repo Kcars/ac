@@ -468,7 +468,6 @@ export default {
       }
 
       if (this._at == "cron") {
-        console.log(`cron type: ${this._crontext}`);
         if (this._crontext.split(" ").length == 6) {
           if (task != null) {
             console.log(`cron destroy: ${this._crontext}`);
@@ -480,8 +479,9 @@ export default {
             this.play();
           });
 
-          console.log(`cron create:`);
-          console.log(task)
+          console.log(`cron create: ${this._crontext}`);
+        } else {
+          console.log(`cron format check failed: ${this._crontext.length}`) ;
         }
       }
     },
