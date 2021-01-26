@@ -10,12 +10,8 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.css$/,
-                //exclude: /node_modules/,
-                use: [
-                    'style-loader',
-                    { loader: 'css-loader', options: { importLoaders: 1 } },
-                    'postcss-loader'],
+                test: /\.(scss|css)$/,
+                use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
             },
             {
                 test: /\.vue$/,
