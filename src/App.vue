@@ -70,6 +70,9 @@
 <script>
 const TABLE_NAME = "tasks_ac";
 
+import DEFAULT_SE from "./sounds/hand-drum01.mp3"; // http://www.kurage-kosho.info/others.html
+import cron from "node-cron";
+
 import localforage from "localforage";
 
 import AlertBlockVue from "./AlertBlock.vue";
@@ -83,15 +86,11 @@ export default {
       this.tasks.push({
         at: "countdown",
         label: "",
-        vol: 0.5,
+        vol: 5,
         loop: "false",
         source: "",
-        select_month: -1,
         select_date: -1,
         select_day: -1,
-        select_hour: -1,
-        select_minute: -1,
-        select_second: -1,
         crontext: "",
         is_setting: true,
       });
@@ -102,17 +101,70 @@ export default {
     },
     updateTasks(item) {
       this.tasks[item.index] = item;
+
+      if (item.at == "cron") {
+        this.updateCron(item.index, item);
+      } else {
+        if (this.crons[item.index] != null) {
+          this.deleteCron(item.index);
+        }
+      }
+
       this.updateTable();
     },
     updateTable() {
       let obj = JSON.stringify(this.tasks);
       localforage.setItem(TABLE_NAME, obj, (err, res) => {});
     },
+    updateCron(index, task) {
+      if (task.crontext.split(" ").length == 6) {
+        if (this.crons[index] != null) {
+          this.deleteCron(index);
+        }
+
+        this.crons[index] = cron.schedule(task.crontext, () => {
+          console.log(`cron play: ${task.crontext} , sound: ${task.source}`);
+          this.play(task);
+        });
+
+        console.log(`cron create: ${task.crontext}`);
+      } else {
+        console.log(`cron format check failed: ${task.crontext}`);
+      }
+    },
+    deleteCron(index) {
+      console.log(`cron destroy. index: ${index}`);
+      this.crons[index].destroy();
+      this.crons.splice(index, 1);
+    },
+    play(task) {
+      if (task.source.indexOf("http") != -1 || task.source == "") {
+        let sound;
+        let _source = task.source;
+
+        if (task.source == "") {
+          _source = DEFAULT_SE;
+        }
+
+        try {
+          sound = new Audio(_source);
+
+          sound.volume = task.vol / 10;
+          sound.play();
+        } catch (err) {
+          console.error(`play sound failed:  , source: ${_source}`);
+        }
+      } else {
+        let utterance = new SpeechSynthesisUtterance(task.source);
+        speechSynthesis.speak(utterance);
+      }
+    },
   },
   data() {
     return {
       times: { hour: 0, minute: 0, second: 0 },
       tasks: [],
+      crons: [],
     };
   },
   async mounted() {
@@ -120,6 +172,12 @@ export default {
     tasks = JSON.parse(tasks);
     tasks = tasks == null ? [] : tasks;
     this.tasks = tasks;
+
+    tasks.forEach((task, index) => {
+      if (task.at == "cron") {
+        this.updateCron(index, task);
+      }
+    });
   },
 };
 </script>

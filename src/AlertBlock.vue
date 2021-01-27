@@ -154,7 +154,7 @@
         </div>
 
         <div
-          v-if="enable_loop"
+          v-if="_at == 'countdown'"
           class="mx-auto w-5/6 flex flex-col items-center"
         >
           <label class="mx-auto w-5/6 text-center" for="minute">是否重複</label>
@@ -195,7 +195,7 @@
           />
         </div>
       </div>
-      <div class="mx-2 h-full flex absolute right-2">
+      <div class="mx-2 my-auto flex">
         <button
           class="w-8 h-8 my-auto text-indigo-100 transition-colors duration-150 bg-red-500 rounded-lg focus:shadow-outline hover:bg-indigo-800"
           @click="doRemove"
@@ -349,9 +349,7 @@
 
 <script>
 import DEFAULT_SE from "./sounds/hand-drum01.mp3"; // http://www.kurage-kosho.info/others.html
-import cron from "node-cron";
-
-let task = null;
+//import cron from "node-cron";
 
 export default {
   data() {
@@ -391,6 +389,8 @@ export default {
       enable_minute: true,
       enable_second: true,
       enable_loop: true,
+
+      //_task: null
     };
   },
   methods: {
@@ -436,29 +436,30 @@ export default {
       }
     },
     doSetting() {
-      this.setting = !this.setting;
+      if (this._at == "cron" && this._crontext.split(" ").length != 6) {
+        alert("cron text format failed.");
+      } else {
+        this.setting = !this.setting;
 
-      if (!this.setting) {
-        this.$emit("update_tasks", {
-          index: this.index,
-          at: this._at,
-          label: this._label,
-          vol: this._vol,
-          loop: this._loop,
-          source: this._source,
-          select_date: this._select_date,
-          select_day: this._select_day,
-          select_time: this._select_time,
-          dvalue: this._dvalue,
-          cd_type: this._cd_type,
-          crontext: this._crontext,
-        });
+        if (!this.setting) {
+          this.$emit("update_tasks", {
+            index: this.index,
+            at: this._at,
+            label: this._label,
+            vol: this._vol,
+            loop: this._loop,
+            source: this._source,
+            select_date: this._select_date,
+            select_day: this._select_day,
+            select_time: this._select_time,
+            dvalue: this._dvalue,
+            cd_type: this._cd_type,
+            crontext: this._crontext,
+          });
+        }
       }
     },
     doRemove() {
-      if (task != null) {
-        task.destroy();
-      }
       this.$emit("remove", this.index);
     },
     parseValue() {
@@ -468,26 +469,6 @@ export default {
         this._dvalue = this._value = val;
       } else {
         this._dvalue = this._value = -1;
-      }
-
-      if (this._at == "cron") {
-        if (this._crontext.split(" ").length == 6) {
-          if (task != null) {
-            console.log(`cron destroy: ${this._crontext}`);
-            task.destroy();
-          }
-
-          task = cron.schedule(this._crontext, () => {
-            console.log(
-              `cron play: ${this._crontext} , sound: ${this._source}`
-            );
-            this.play();
-          });
-
-          console.log(`cron create: ${this._crontext}`);
-        } else {
-          console.log(`cron format check failed: ${this._crontext.length}`);
-        }
       }
     },
     onChangeAT(ev) {
@@ -511,12 +492,6 @@ export default {
       if (val == "everyday") {
       }
     },
-    onChangeMonth(ev) {},
-    onChangeDate(ev) {},
-    onChangeDay(ev) {},
-    onChangeHour(ev) {},
-    onChangeLoop(ev) {},
-    onChangeVol(ev) {},
   },
   mounted: function () {
     this._at = this.at;
@@ -579,16 +554,11 @@ export default {
     hour: function (news, olds) {},
     minute: function (news, olds) {},
     second: function (news, olds) {
-      if (
-        this._value >= 0 &&
-        !this.is_stop &&
-        this._at == "countdown" &&
-        !this.is_setting
-      ) {
+      if (this._value >= 0 && !this.is_stop && this._at == "countdown") {
         this._value -= 1;
       }
 
-      if (this._at == "spectime" && !this.is_setting) {
+      if (this._at == "spectime" && !this.setting) {
         let target_date = new Date(`${this._select_date} ${this._select_time}`);
 
         if (
@@ -602,7 +572,7 @@ export default {
         }
       }
 
-      if (this._at == "everyweek" && !this.is_setting) {
+      if (this._at == "everyweek" && !this.setting) {
         let hms = this._select_time.split(":");
 
         if (
@@ -615,7 +585,7 @@ export default {
         }
       }
 
-      if (this._at == "everyday" && !this.is_setting) {
+      if (this._at == "everyday" && !this.setting) {
         let hms = this._select_time.split(":");
 
         if (
@@ -629,9 +599,11 @@ export default {
     },
     _value: function (news, olds) {
       if (news == 0) {
-        this.play();
+        if (!this.setting) {
+          this.play();
+        }
 
-        if (this.loop == "true") {
+        if (this._loop == "true" || this._loop == true) {
           this.reset();
         }
       }
