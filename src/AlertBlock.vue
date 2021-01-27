@@ -2,7 +2,7 @@
   <div class="w-full mx-auto">
     <div
       v-if="setting"
-      class="bg-gray-700 rounded-lg w-1/2 h-60 flex m-1 relative overflow-auto mx-auto"
+      class="bg-gray-700 rounded-lg w-1/2 h-96 flex m-1 relative overflow-auto mx-auto"
     >
       <div class="mx-2 my-auto flex">
         <button
@@ -26,10 +26,10 @@
         </button>
       </div>
       <div class="w-full space-y-1 flex flex-col justify-center">
-        <div class="ml-5 mt-2 w-1/2">
-          <label for="vol">標題: </label>
+        <div class="mx-auto mt-5 w-5/6 flex flex-col items-center">
+          <label class="mx-auto w-5/6 text-center" for="vol">標題</label>
           <input
-            class="w-1/2"
+            class="mx-auto w-5/6"
             type="text"
             id="label"
             name="source"
@@ -37,9 +37,16 @@
             v-model="_label"
           />
         </div>
-        <div class="ml-5 w-3/4">
-          <label for="at">類型: </label>
-          <select name="at" id="at" @change="onChangeAT" v-model="_at">
+
+        <div class="mx-auto mt-2 w-5/6 flex flex-col items-center">
+          <label class="mx-auto w-5/6 text-center" for="at">類型</label>
+          <select
+            class="mx-auto w-5/6"
+            name="at"
+            id="at"
+            @change="onChangeAT"
+            v-model="_at"
+          >
             <option value="countdown">倒數計時</option>
             <option value="spectime">指定時間</option>
             <option value="everyweek">每週</option>
@@ -47,43 +54,31 @@
             <option value="cron">cron</option>
           </select>
         </div>
-        <div v-if="_at !== 'cron'">
-          <div class="ml-5 w-3/4" v-if="enable_month">
-            <select
-              name="month"
-              id="month"
-              @change="onChangeMonth"
-              v-model="_select_month"
-            >
-              <option
-                v-for="month in Array.from({ length: 12 }, (v, i) => i + 1)"
-                :key="month"
-                :value="month"
-              >
-                {{ month }}
-              </option>
-            </select>
-            <label for="month">月</label>
 
-            <select
-              name="date"
-              id="day"
-              @change="onChangeDate"
-              v-model="_select_date"
+        <div v-if="_at !== 'cron'">
+          <div
+            class="mx-auto w-5/6 flex flex-col items-center"
+            v-if="enable_month"
+          >
+            <label class="mx-auto w-5/6 text-center" for="in_date"
+              >年月日</label
             >
-              <option
-                v-for="date in Array.from({ length: 31 }, (v, i) => i + 1)"
-                :key="date"
-                :value="date"
-              >
-                {{ date }}
-              </option>
-            </select>
-            <label for="date">日</label>
+            <input
+              class="mx-auto w-5/6"
+              type="date"
+              id="in_date"
+              name="in_date"
+              v-model="_select_date"
+            />
           </div>
-          <div class="ml-5 w-3/4" v-if="enable_day">
-            <label for="day">星期</label>
+
+          <div
+            class="mx-auto w-5/6 flex flex-col items-center"
+            v-if="enable_day"
+          >
+            <label class="mx-auto w-5/6 text-center" for="day">星期</label>
             <select
+              class="mx-auto w-5/6"
               name="day"
               id="day"
               @change="onChangeDay"
@@ -98,60 +93,58 @@
               </option>
             </select>
           </div>
-          <div class="ml-5 w-3/4">
-            <select
-              name="hour"
-              id="hour"
-              @change="onChangeHour"
-              v-model="_select_hour"
-            >
-              <option
-                v-for="hour in Array.from({ length: 24 }, (v, i) => i)"
-                :key="hour"
-                :value="hour"
-              >
-                {{ hour }}
-              </option>
-            </select>
-            <label for="hour">時</label>
 
-            <select
-              name="minute"
-              id="minute"
-              @change="onChangeMinute"
-              v-model="_select_minute"
+          <div
+            v-if="_at != 'countdown'"
+            class="mx-auto w-5/6 flex flex-col items-center"
+          >
+            <label class="mx-auto w-5/6 text-center" for="in_time"
+              >時分秒</label
             >
-              <option
-                v-for="minute in Array.from({ length: 60 }, (v, i) => i)"
-                :key="minute"
-                :value="minute"
-              >
-                {{ minute }}
-              </option>
-            </select>
-            <label for="minute">分</label>
-
-            <select
-              name="second"
-              id="second"
-              @change="onChangeSecond"
-              v-model="_select_second"
-            >
-              <option
-                v-for="second in Array.from({ length: 60 }, (v, i) => i)"
-                :key="second"
-                :value="second"
-              >
-                {{ second }}
-              </option>
-            </select>
-            <label for="second">秒</label>
+            <input
+              class="mx-auto w-5/6"
+              type="time"
+              id="in_time"
+              name="in_time"
+              step="1"
+              v-model="_select_time"
+            />
           </div>
         </div>
-        <div class="ml-5 mt-2 w-1/2" v-if="_at == 'cron'">
-          <label for="cron">crontext: </label>
+
+        <div
+          v-if="_at == 'countdown'"
+          class="mx-auto w-5/6 flex flex-col items-center"
+        >
+          <label class="mx-auto w-5/6 text-center" for="in_cd">時間</label>
+          <div class="mx-auto w-5/6 flex flex-row items-center">
+            <input
+              class="mx-auto w-1/2"
+              type="number"
+              id="in_cd"
+              name="in_cd"
+              v-model="_dvalue"
+            />
+
+            <select
+              class="mx-auto w-1/2"
+              name="cd_type"
+              id="cd_type"
+              v-model="_cd_type"
+            >
+              <option value="minute">分</option>
+              <option value="seconds">秒</option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          class="mx-auto w-5/6 flex flex-col items-center"
+          v-if="_at == 'cron'"
+        >
+          <label class="mx-auto w-5/6 text-center" for="cron">CronText</label>
           <input
-            class="w-1/2"
+            class="mx-auto w-5/6"
             type="text"
             id="cron"
             name="cron"
@@ -159,31 +152,41 @@
             v-model="_crontext"
           />
         </div>
-        <div v-if="enable_loop" class="ml-5 w-3/4">
-          <label for="minute">是否重複</label>
-          <select name="loop" id="loop" @change="onChangeLoop" v-model="_loop">
+
+        <div
+          v-if="enable_loop"
+          class="mx-auto w-5/6 flex flex-col items-center"
+        >
+          <label class="mx-auto w-5/6 text-center" for="minute">是否重複</label>
+          <select
+            class="mx-auto w-5/6"
+            name="loop"
+            id="loop"
+            @change="onChangeLoop"
+            v-model="_loop"
+          >
             <option value="true">是</option>
             <option value="false">否</option>
           </select>
         </div>
-        <div class="ml-5 w-1/2">
-          <label for="vol">音量: </label>
-          <select name="vol" id="vol" @change="onChangeVol" v-model="_vol">
-            <option
-              v-for="vol in Array.from({ length: 10 }, (v, i) =>
-                (i * 0.1 + 0.1).toFixed(1)
-              )"
-              :key="vol"
-              :value="vol"
-            >
-              {{ vol }}
-            </option>
-          </select>
-        </div>
-        <div class="ml-5 w-4/6">
-          <label for="vol">音樂: </label>
+
+        <div class="mx-auto w-5/6 flex flex-col items-center">
+          <label class="mx-auto w-5/6 text-center" for="vol">音量</label>
           <input
-            class="w-4/6"
+            class="mx-auto w-5/6"
+            type="range"
+            id="vol"
+            name="vol"
+            min="0"
+            max="10"
+            v-model="_vol"
+          />
+        </div>
+
+        <div class="mx-auto w-5/6 flex flex-col items-center">
+          <label class="mx-auto w-5/6 text-center" for="vol">音樂</label>
+          <input
+            class="mx-auto w-5/6"
             type="text"
             id="source"
             name="source"
@@ -215,6 +218,7 @@
         </button>
       </div>
     </div>
+    <!-- view -->
     <div
       v-if="!setting"
       class="bg-gray-700 rounded-lg w-1/2 h-16 flex m-1 relative overflow-auto mx-auto"
@@ -359,24 +363,26 @@ export default {
       _hour: 1,
       _minute: 1,
       _second: 1,
-      _crontext: "",
+
       _loop: false,
-      _vol: 0.5,
+      _vol: 5,
+
       _source: "",
       _label: "",
 
-      _select_month: -1,
-      _select_date: -1,
-      _select_day: -1,
-      _select_hour: -1,
-      _select_minute: -1,
-      _select_second: -1,
+      _select_date: null,
+      _select_day: null,
+
+      _select_time: null,
+
+      _crontext: "",
+
+      _cd_type: "seconds",
+      _value: 0,
+      _dvalue: 0,
 
       is_stop: false,
       setting: false,
-
-      _value: 0,
-      _dvalue: 0,
 
       enable_month: true,
       enable_date: true,
@@ -419,7 +425,7 @@ export default {
         try {
           sound = new Audio(_source);
 
-          sound.volume = this._vol;
+          sound.volume = this._vol / 10;
           sound.play();
         } catch (err) {
           console.error(`play sound failed:  , source: ${_source}`);
@@ -433,8 +439,6 @@ export default {
       this.setting = !this.setting;
 
       if (!this.setting) {
-        //this.parseValue();
-
         this.$emit("update_tasks", {
           index: this.index,
           at: this._at,
@@ -442,25 +446,24 @@ export default {
           vol: this._vol,
           loop: this._loop,
           source: this._source,
-          select_month: this._select_month,
           select_date: this._select_date,
           select_day: this._select_day,
-          select_hour: this._select_hour,
-          select_minute: this._select_minute,
-          select_second: this._select_second,
+          select_time: this._select_time,
+          dvalue: this._dvalue,
+          cd_type: this._cd_type,
           crontext: this._crontext,
         });
       }
     },
     doRemove() {
+      if (task != null) {
+        task.destroy();
+      }
       this.$emit("remove", this.index);
     },
     parseValue() {
       if (this._at == "countdown") {
-        let n_hour = this._select_hour >= 0 ? this._select_hour * 60 * 60 : 0;
-        let n_minute = this._select_minute >= 0 ? this._select_minute * 60 : 0;
-        let n_second = this._select_second >= 0 ? this._select_second : 0;
-        let val = n_hour + n_minute + n_second;
+        let val = this._dvalue * (this._cd_type == "minute" ? 60 : 1);
 
         this._dvalue = this._value = val;
       } else {
@@ -475,13 +478,15 @@ export default {
           }
 
           task = cron.schedule(this._crontext, () => {
-            console.log(`cron play: ${this._crontext} , sound: ${this._source}`);
+            console.log(
+              `cron play: ${this._crontext} , sound: ${this._source}`
+            );
             this.play();
           });
 
           console.log(`cron create: ${this._crontext}`);
         } else {
-          console.log(`cron format check failed: ${this._crontext.length}`) ;
+          console.log(`cron format check failed: ${this._crontext.length}`);
         }
       }
     },
@@ -515,24 +520,29 @@ export default {
   },
   mounted: function () {
     this._at = this.at;
+
     this._month = this.month;
     this._date = this.date;
     this._day = this.day;
     this._hour = this.hour;
     this._minute = this.minute;
     this._second = this.second;
+
     this._loop = this.loop;
     this._vol = this.vol;
+
     this._label = this.label;
     this._source = this.source;
+
     this._crontext = this.crontext;
 
-    this._select_month = this.select_month;
     this._select_date = this.select_date;
     this._select_day = this.select_day;
-    this._select_hour = this.select_hour;
-    this._select_minute = this.select_minute;
-    this._select_second = this.select_second;
+
+    this._select_time = this.select_time;
+
+    this._cd_type = this.cd_type == null ? "seconds" : this.cd_type;
+    this._dvalue = this.dvalue;
 
     this.setting = this.is_setting;
 
@@ -558,50 +568,60 @@ export default {
     "source",
     "loop",
     "is_setting",
-    "select_month",
     "select_date",
     "select_day",
-    "select_hour",
-    "select_minute",
-    "select_second",
+    "select_time",
+    "cd_type",
     "crontext",
+    "dvalue",
   ],
   watch: {
     hour: function (news, olds) {},
     minute: function (news, olds) {},
     second: function (news, olds) {
-      if (this._value > 0 && !this.is_stop && this._at == "countdown") {
+      if (
+        this._value >= 0 &&
+        !this.is_stop &&
+        this._at == "countdown" &&
+        !this.is_setting
+      ) {
         this._value -= 1;
       }
 
-      if (this._at == "spectime") {
+      if (this._at == "spectime" && !this.is_setting) {
+        let target_date = new Date(`${this._select_date} ${this._select_time}`);
+
         if (
-          this.month == this._select_month - 1 &&
-          this.date == this._select_date &&
-          this.hour == this._select_hour &&
-          this.minute == this._select_minute &&
-          this.second == this._select_second
+          this.month == target_date.getMonth() &&
+          this.date == target_date.getDate() &&
+          this.hour == target_date.getHours() &&
+          this.minute == target_date.getMinutes() &&
+          this.second == target_date.getSeconds()
         ) {
           this.play();
         }
       }
 
-      if (this._at == "everyweek") {
+      if (this._at == "everyweek" && !this.is_setting) {
+        let hms = this._select_time.split(":");
+
         if (
           this.day == this._select_day &&
-          this.hour == this._select_hour &&
-          this.minute == this._select_minute &&
-          this.second == this._select_second
+          this.hour == parseInt(hms[0], 10) &&
+          this.minute == parseInt(hms[1], 10) &&
+          this.second == parseInt(hms[2], 10)
         ) {
           this.play();
         }
       }
 
-      if (this._at == "everyday") {
+      if (this._at == "everyday" && !this.is_setting) {
+        let hms = this._select_time.split(":");
+
         if (
-          this.hour == this._select_hour &&
-          this.minute == this._select_minute &&
-          this.second == this._select_second
+          this.hour == parseInt(hms[0], 10) &&
+          this.minute == parseInt(hms[1], 10) &&
+          this.second == parseInt(hms[2], 10)
         ) {
           this.play();
         }
@@ -611,7 +631,7 @@ export default {
       if (news == 0) {
         this.play();
 
-        if (this.loop) {
+        if (this.loop == "true") {
           this.reset();
         }
       }

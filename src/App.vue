@@ -53,12 +53,11 @@
         :vol="task.vol"
         :loop="task.loop"
         :source="task.source"
-        :select_month="task.select_month"
         :select_date="task.select_date"
         :select_day="task.select_day"
-        :select_hour="task.select_hour"
-        :select_minute="task.select_minute"
-        :select_second="task.select_second"
+        :select_time="task.select_time"
+        :dvalue="task.dvalue"
+        :cd_type="task.cd_type"
         :is_setting="task.is_setting"
         :crontext="task.crontext"
         v-on:remove="onCompRemove"
@@ -108,7 +107,7 @@ export default {
     updateTable() {
       let obj = JSON.stringify(this.tasks);
       localforage.setItem(TABLE_NAME, obj, (err, res) => {});
-    }
+    },
   },
   data() {
     return {
