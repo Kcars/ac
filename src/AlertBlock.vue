@@ -428,7 +428,7 @@ export default {
           sound.volume = this._vol / 10;
           sound.play();
         } catch (err) {
-          console.error(`play sound failed:  , source: ${_source}`);
+          console.error(`play sound failed. , source: ${_source}`);
         }
       } else {
         let utterance = new SpeechSynthesisUtterance(this._source);
@@ -568,6 +568,7 @@ export default {
           this.minute == target_date.getMinutes() &&
           this.second == target_date.getSeconds()
         ) {
+           console.log(`spectime play:${target_date.toUTCString()}`);
           this.play();
         }
       }
@@ -581,6 +582,7 @@ export default {
           this.minute == parseInt(hms[1], 10) &&
           this.second == parseInt(hms[2], 10)
         ) {
+          console.log(`everyweek play:${hms}`);
           this.play();
         }
       }
@@ -593,6 +595,7 @@ export default {
           this.minute == parseInt(hms[1], 10) &&
           this.second == parseInt(hms[2], 10)
         ) {
+          console.log(`everyday play:${hms}`);
           this.play();
         }
       }
