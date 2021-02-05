@@ -5,7 +5,7 @@
       <div class="w-2/6 m-auto text-center flex justify-end">
         <button
           class="h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800 absolute left-0 top-0"
-          @click="addAlert"
+          @click="addTask(null)"
         >
           <svg
             width="24"
@@ -42,142 +42,29 @@
         v-for="(task, index) in tasks"
         :key="task"
         :index="index"
-        :month="times.month"
-        :date="times.date"
-        :day="times.day"
-        :hour="times.hour"
-        :minute="times.minute"
-        :second="times.second"
-        :at="task.at"
-        :label="task.label"
-        :vol="task.vol"
-        :loop="task.loop"
-        :source="task.source"
-        :select_date="task.select_date"
-        :select_day="task.select_day"
-        :select_time="task.select_time"
-        :dvalue="task.dvalue"
-        :cd_type="task.cd_type"
-        :is_setting="task.is_setting"
-        :crontext="task.crontext"
-        v-on:remove="onCompRemove"
-        v-on:update_tasks="updateTasks"
       ></AlertBlockVue>
     </div>
   </div>
 </template>
 
 <script>
-const TABLE_NAME = "tasks_ac";
-
-import DEFAULT_SE from "./sounds/hand-drum01.mp3"; // http://www.kurage-kosho.info/others.html
-import cron from "node-cron";
-
-import localforage from "localforage";
-
 import AlertBlockVue from "./AlertBlock.vue";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
     AlertBlockVue,
   },
+  computed: mapState({
+    times: (state) => state.times,
+    tasks: (state) => state.tasks,
+    crons: (state) => state.crons,
+  }),
   methods: {
-    addAlert() {
-      this.tasks.push({
-        at: "countdown",
-        label: "",
-        vol: 5,
-        loop: "false",
-        source: "",
-        select_date: -1,
-        select_day: -1,
-        crontext: "",
-        is_setting: true,
-      });
-    },
-    onCompRemove(index) {
-      this.tasks.splice(index, 1);
-      this.updateTable();
-    },
-    updateTasks(item) {
-      this.tasks[item.index] = item;
-
-      if (item.at == "cron") {
-        this.updateCron(item.index, item);
-      } else {
-        if (this.crons[item.index] != null) {
-          this.deleteCron(item.index);
-        }
-      }
-
-      this.updateTable();
-    },
-    updateTable() {
-      let obj = JSON.stringify(this.tasks);
-      localforage.setItem(TABLE_NAME, obj, (err, res) => {});
-    },
-    updateCron(index, task) {
-      if (task.crontext.split(" ").length == 6) {
-        if (this.crons[index] != null) {
-          this.deleteCron(index);
-        }
-
-        this.crons[index] = cron.schedule(task.crontext, () => {
-          console.log(`cron play: ${task.crontext} , sound: ${task.source}`);
-          this.play(task);
-        });
-
-        console.log(`cron create: ${task.crontext}`);
-      } else {
-        console.log(`cron format check failed: ${task.crontext}`);
-      }
-    },
-    deleteCron(index) {
-      console.log(`cron destroy. index: ${index}`);
-      this.crons[index].destroy();
-      this.crons.splice(index, 1);
-    },
-    play(task) {
-      if (task.source.indexOf("http") != -1 || task.source == "") {
-        let sound;
-        let _source = task.source;
-
-        if (task.source == "") {
-          _source = DEFAULT_SE;
-        }
-
-        try {
-          sound = new Audio(_source);
-
-          sound.volume = task.vol / 10;
-          sound.play();
-        } catch (err) {
-          console.error(`play sound failed:  , source: ${_source}`);
-        }
-      } else {
-        let utterance = new SpeechSynthesisUtterance(task.source);
-        speechSynthesis.speak(utterance);
-      }
-    },
-  },
-  data() {
-    return {
-      times: { hour: 0, minute: 0, second: 0 },
-      tasks: [],
-      crons: [],
-    };
+    ...mapActions(["addTask", "updateTask", "deleteTask", "playSound"]),
   },
   async mounted() {
-    let tasks = await localforage.getItem(TABLE_NAME);
-    tasks = JSON.parse(tasks);
-    tasks = tasks == null ? [] : tasks;
-    this.tasks = tasks;
-
-    tasks.forEach((task, index) => {
-      if (task.at == "cron") {
-        this.updateCron(index, task);
-      }
-    });
+    this.$store.dispatch("start");
   },
 };
 </script>

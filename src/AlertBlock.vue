@@ -34,7 +34,7 @@
             id="label"
             name="source"
             placeholder="text"
-            v-model="_label"
+            v-model="label"
           />
         </div>
 
@@ -45,7 +45,7 @@
             name="at"
             id="at"
             @change="onChangeAT"
-            v-model="_at"
+            v-model="at"
           >
             <option value="countdown">倒數計時</option>
             <option value="spectime">指定時間</option>
@@ -55,10 +55,10 @@
           </select>
         </div>
 
-        <div v-if="_at !== 'cron'">
+        <div v-if="at !== 'cron'">
           <div
             class="mx-auto w-5/6 flex flex-col items-center"
-            v-if="enable_month"
+            v-if="at == 'spectime'"
           >
             <label class="mx-auto w-5/6 text-center" for="in_date"
               >年月日</label
@@ -68,21 +68,20 @@
               type="date"
               id="in_date"
               name="in_date"
-              v-model="_select_date"
+              v-model="select_date"
             />
           </div>
 
           <div
             class="mx-auto w-5/6 flex flex-col items-center"
-            v-if="enable_day"
+            v-if="at == 'everyweek'"
           >
             <label class="mx-auto w-5/6 text-center" for="day">星期</label>
             <select
               class="mx-auto w-5/6"
               name="day"
               id="day"
-              @change="onChangeDay"
-              v-model="_select_day"
+              v-model="select_day"
             >
               <option
                 v-for="day in Array.from({ length: 7 }, (v, i) => i)"
@@ -95,7 +94,7 @@
           </div>
 
           <div
-            v-if="_at != 'countdown'"
+            v-if="at != 'countdown'"
             class="mx-auto w-5/6 flex flex-col items-center"
           >
             <label class="mx-auto w-5/6 text-center" for="in_time"
@@ -107,13 +106,13 @@
               id="in_time"
               name="in_time"
               step="1"
-              v-model="_select_time"
+              v-model="select_time"
             />
           </div>
         </div>
 
         <div
-          v-if="_at == 'countdown'"
+          v-if="at == 'countdown'"
           class="mx-auto w-5/6 flex flex-col items-center"
         >
           <label class="mx-auto w-5/6 text-center" for="in_cd">時間</label>
@@ -123,14 +122,14 @@
               type="number"
               id="in_cd"
               name="in_cd"
-              v-model="_dvalue"
+              v-model="dvalue"
             />
 
             <select
               class="mx-auto w-1/2"
               name="cd_type"
               id="cd_type"
-              v-model="_cd_type"
+              v-model="cd_type"
             >
               <option value="minute">分</option>
               <option value="seconds">秒</option>
@@ -140,7 +139,7 @@
 
         <div
           class="mx-auto w-5/6 flex flex-col items-center"
-          v-if="_at == 'cron'"
+          v-if="at == 'cron'"
         >
           <label class="mx-auto w-5/6 text-center" for="cron">CronText</label>
           <input
@@ -149,12 +148,12 @@
             id="cron"
             name="cron"
             placeholder="* * * * * *"
-            v-model="_crontext"
+            v-model="crontext"
           />
         </div>
 
         <div
-          v-if="_at == 'countdown'"
+          v-if="at == 'countdown'"
           class="mx-auto w-5/6 flex flex-col items-center"
         >
           <label class="mx-auto w-5/6 text-center" for="minute">是否重複</label>
@@ -163,7 +162,7 @@
             name="loop"
             id="loop"
             @change="onChangeLoop"
-            v-model="_loop"
+            v-model="loop"
           >
             <option value="true">是</option>
             <option value="false">否</option>
@@ -179,7 +178,7 @@
             name="vol"
             min="0"
             max="10"
-            v-model="_vol"
+            v-model="vol"
           />
         </div>
 
@@ -191,7 +190,7 @@
             id="source"
             name="source"
             placeholder="empty=default or https://*.mp3 or speech text"
-            v-model="_source"
+            v-model="source"
           />
         </div>
       </div>
@@ -244,7 +243,7 @@
           </svg>
         </button>
       </div>
-      <div class="mx-2 my-auto flex" v-if="_at == 'countdown'">
+      <div class="mx-2 my-auto flex" v-if="at == 'countdown'">
         <button
           class="text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
           @click="reset"
@@ -318,7 +317,7 @@
       </div>
 
       <div class="my-auto">
-        <span class="text-3xl align-middle">{{ _label }}</span>
+        <span class="text-3xl align-middle">{{ label }}</span>
       </div>
 
       <div class="mx-2 flex absolute top-1/4 right-2">
@@ -348,40 +347,13 @@
 </template>
 
 <script>
-import DEFAULT_SE from "./sounds/hand-drum01.mp3"; // http://www.kurage-kosho.info/others.html
-//import cron from "node-cron";
+import { mapState, mapActions } from "vuex";
 
 export default {
   data() {
     return {
-      _at: "countdown",
-      _month: 1,
-      _date: 1,
-      _day: 1,
-      _hour: 1,
-      _minute: 1,
-      _second: 1,
-
-      _loop: false,
-      _vol: 5,
-
-      _source: "",
-      _label: "",
-
-      _select_date: null,
-      _select_day: null,
-
-      _select_time: null,
-
-      _crontext: "",
-
-      _cd_type: "seconds",
-      _value: 0,
-      _dvalue: 0,
-
       is_stop: false,
-      setting: false,
-
+      _value: 0,
       enable_month: true,
       enable_date: true,
       enable_day: true,
@@ -389,8 +361,6 @@ export default {
       enable_minute: true,
       enable_second: true,
       enable_loop: true,
-
-      //_task: null
     };
   },
   methods: {
@@ -404,7 +374,7 @@ export default {
       return output;
     },
     reset() {
-      this._value = this._dvalue;
+      this._value = this.dvalue;
     },
     stop() {
       this.is_stop = !this.is_stop;
@@ -414,61 +384,47 @@ export default {
         return;
       }
 
-      if (this._source.indexOf("http") != -1 || this._source == "") {
-        let sound;
-        let _source = this.source;
-
-        if (this.source == "") {
-          _source = DEFAULT_SE;
-        }
-
-        try {
-          sound = new Audio(_source);
-
-          sound.volume = this._vol / 10;
-          sound.play();
-        } catch (err) {
-          console.error(`play sound failed. , source: ${_source}`);
-        }
-      } else {
-        let utterance = new SpeechSynthesisUtterance(this._source);
-        speechSynthesis.speak(utterance);
-      }
+      this.$store.dispatch("playSound", { index: this.index });
     },
     doSetting() {
-      if (this._at == "cron" && this._crontext.split(" ").length != 6) {
+      if (this.at == "cron" && this.crontext.split(" ").length != 6) {
         alert("cron text format failed.");
       } else {
         this.setting = !this.setting;
 
+        let obj = {
+          index: this.index,
+          at: this.at,
+          label: this.label,
+          vol: this.vol,
+          loop: this.loop,
+          source: this.source,
+          select_date: this.select_date,
+          select_day: this.select_day,
+          select_time: this.select_time,
+          dvalue: this.dvalue,
+          cd_type: this.cd_type,
+          crontext: this.crontext,
+        };
+
         if (!this.setting) {
-          this.$emit("update_tasks", {
+          this.$store.dispatch("updateTask", {
             index: this.index,
-            at: this._at,
-            label: this._label,
-            vol: this._vol,
-            loop: this._loop,
-            source: this._source,
-            select_date: this._select_date,
-            select_day: this._select_day,
-            select_time: this._select_time,
-            dvalue: this._dvalue,
-            cd_type: this._cd_type,
-            crontext: this._crontext,
+            setting: obj,
           });
         }
       }
     },
     doRemove() {
-      this.$emit("remove", this.index);
+      this.$store.dispatch("deleteTask", { index: this.index });
     },
     parseValue() {
-      if (this._at == "countdown") {
-        let val = this._dvalue * (this._cd_type == "minute" ? 60 : 1);
+      if (this.at == "countdown") {
+        let val = this.dvalue * (this.cd_type == "minute" ? 60 : 1);
 
-        this._dvalue = this._value = val;
+        this.dvalue = this.value = val;
       } else {
-        this._dvalue = this._value = -1;
+        this.dvalue = this.value = -1;
       }
     },
     onChangeAT(ev) {
@@ -477,12 +433,12 @@ export default {
       this.enable_month = this.enable_day = false;
 
       if (val == "countdown") {
-        this.enable_loop = this._loop = true;
+        this.enable_loop = this.loop = true;
       }
 
       if (val == "spectime") {
         this.enable_month = true;
-        this.enable_loop = this._loop = false;
+        this.enable_loop = this.loop = false;
       }
 
       if (val == "everyweek") {
@@ -493,74 +449,133 @@ export default {
       }
     },
   },
+  computed: {
+    label: {
+      get() {
+        return this.$store.state.tasks[this.index].label;
+      },
+      set(val) {
+        this.$store.commit("updateLabel", { index: this.index, val });
+      },
+    },
+    at: {
+      get() {
+        return this.$store.state.tasks[this.index].at;
+      },
+      set(val) {
+        this.$store.commit("updateAT", { index: this.index, val });
+      },
+    },
+    select_date: {
+      get() {
+        return this.$store.state.tasks[this.index].select_date;
+      },
+      set(val) {
+        this.$store.commit("updateSelectDate", { index: this.index, val });
+      },
+    },
+    select_day: {
+      get() {
+        return this.$store.state.tasks[this.index].select_day;
+      },
+      set(val) {
+        this.$store.commit("updateSelectDay", { index: this.index, val });
+      },
+    },
+    select_time: {
+      get() {
+        return this.$store.state.tasks[this.index].select_time;
+      },
+      set(val) {
+        this.$store.commit("updateSelectTime", { index: this.index, val });
+      },
+    },
+    cd_type: {
+      get() {
+        return this.$store.state.tasks[this.index].cd_type;
+      },
+      set(val) {
+        this.$store.commit("updateCDType", { index: this.index, val });
+      },
+    },
+    vol: {
+      get() {
+        return this.$store.state.tasks[this.index].vol;
+      },
+      set(val) {
+        this.$store.commit("updateVol", { index: this.index, val });
+      },
+    },
+    dvalue: {
+      get() {
+        return this.$store.state.tasks[this.index].dvalue;
+      },
+      set(val) {
+        this.$store.commit("updateDValue", { index: this.index, val });
+      },
+    },
+    source: {
+      get() {
+        return this.$store.state.tasks[this.index].source;
+      },
+      set(val) {
+        this.$store.commit("updateSource", { index: this.index, val });
+      },
+    },
+    loop: {
+      get() {
+        return this.$store.state.tasks[this.index].loop;
+      },
+      set(val) {
+        this.$store.commit("updateLoop", { index: this.index, val });
+      },
+    },
+    crontext: {
+      get() {
+        return this.$store.state.tasks[this.index].crontext;
+      },
+      set(val) {
+        this.$store.commit("updateCronText", { index: this.index, val });
+      },
+    },
+    setting: {
+      get() {
+        return this.$store.state.tasks[this.index].is_setting;
+      },
+      set(val) {
+        this.$store.commit("updateSetting", { index: this.index, val });
+      },
+    },
+    ...mapState({
+      month: (state) => state.times.month,
+      date: (state) => state.times.date,
+      day: (state) => state.times.day,
+      hour: (state) => state.times.hour,
+      minute: (state) => state.times.minute,
+      second: (state) => state.times.second,
+    }),
+  },
   mounted: function () {
-    this._at = this.at;
-
-    this._month = this.month;
-    this._date = this.date;
-    this._day = this.day;
-    this._hour = this.hour;
-    this._minute = this.minute;
-    this._second = this.second;
-
-    this._loop = this.loop;
-    this._vol = this.vol;
-
-    this._label = this.label;
-    this._source = this.source;
-
-    this._crontext = this.crontext;
-
-    this._select_date = this.select_date;
-    this._select_day = this.select_day;
-
-    this._select_time = this.select_time;
-
-    this._cd_type = this.cd_type == null ? "seconds" : this.cd_type;
-    this._dvalue = this.dvalue;
-
-    this.setting = this.is_setting;
-
-    if (this._at == "countdown") {
+    if (this.at == "countdown") {
       this.enable_month = this.enable_date = this.enable_day = false;
+      this.reset();
     } else {
       this.enable_month = this.enable_date = this.enable_day = true;
     }
 
     this.parseValue();
   },
-  props: [
-    "index",
-    "month",
-    "date",
-    "day",
-    "hour",
-    "minute",
-    "second",
-    "at",
-    "label",
-    "vol",
-    "source",
-    "loop",
-    "is_setting",
-    "select_date",
-    "select_day",
-    "select_time",
-    "cd_type",
-    "crontext",
-    "dvalue",
-  ],
+  props: ["index"],
   watch: {
-    hour: function (news, olds) {},
-    minute: function (news, olds) {},
+  //  hour: function (news, olds) {},
+   // minute: function (news, olds) {},
     second: function (news, olds) {
-      if (this._value >= 0 && !this.is_stop && this._at == "countdown") {
+      if (this._value >= 0 && !this.is_stop && this.at == "countdown") {
         this._value -= 1;
       }
 
-      if (this._at == "spectime" && !this.setting) {
-        let target_date = new Date(`${this._select_date} ${this._select_time}`);
-
+      if (this.at == "spectime" && !this.setting) {
+        let target_date = new Date(`${this.select_date} ${this.select_time}`);
         if (
           this.month == target_date.getMonth() &&
           this.date == target_date.getDate() &&
@@ -568,45 +583,42 @@ export default {
           this.minute == target_date.getMinutes() &&
           this.second == target_date.getSeconds()
         ) {
-           console.log(`spectime play:${target_date.toUTCString()}`);
-          this.play();
+          this.$store.dispatch("playSound", { index: this.index });
         }
       }
 
-      if (this._at == "everyweek" && !this.setting) {
-        let hms = this._select_time.split(":");
+      if (this.at == "everyweek" && !this.setting) {
+        let hms = this.select_time.split(":");
 
         if (
-          this.day == this._select_day &&
+          this.day == this.select_day &&
           this.hour == parseInt(hms[0], 10) &&
           this.minute == parseInt(hms[1], 10) &&
           this.second == parseInt(hms[2], 10)
         ) {
-          console.log(`everyweek play:${hms}`);
-          this.play();
+          this.$store.dispatch("playSound", { index: this.index });
         }
       }
 
-      if (this._at == "everyday" && !this.setting) {
-        let hms = this._select_time.split(":");
+      if (this.at == "everyday" && !this.setting) {
+        let hms = this.select_time.split(":");
 
         if (
           this.hour == parseInt(hms[0], 10) &&
           this.minute == parseInt(hms[1], 10) &&
           this.second == parseInt(hms[2], 10)
         ) {
-          console.log(`everyday play:${hms}`);
-          this.play();
+          this.$store.dispatch("playSound", { index: this.index });
         }
       }
     },
     _value: function (news, olds) {
       if (news == 0) {
         if (!this.setting) {
-          this.play();
+          this.$store.dispatch("playSound", { index: this.index });
         }
 
-        if (this._loop == "true" || this._loop == true) {
+        if (this.loop == "true" || this.loop == true) {
           this.reset();
         }
       }
