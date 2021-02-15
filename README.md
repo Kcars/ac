@@ -7,6 +7,7 @@ https://ac.pickoma.com
 ## 練習項目
 
 * Vue3
+* Vuex
 * Tailwindcss
 * WebPack
 * Netlify佈署
@@ -37,7 +38,7 @@ example: `2021-01-10 14:30:00`
 
 * 預設（[鼓聲](http://www.kurage-kosho.info/others.html)）
 
-* 指定網址
+* 指定網址 (雖然有CORS問題)
 
 * 指定台詞（使用瀏覽器的SpeechSynthesisUtterance方法唸出）
 
@@ -56,8 +57,6 @@ example: `2021-01-10 14:30:00`
 瀏覽器會限制自動播放的功能，通常是能在網址列的左方調整是否開放。
 
 ## 目前想到的未完成項目
-
-* 想改成類似crontab的設定方式
 
 * 想增加類似執行script的功能(時間到呼叫API取得檢查值，如果值符合則播放音效)
 
